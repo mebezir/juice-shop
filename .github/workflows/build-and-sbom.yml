@@ -114,12 +114,14 @@ jobs:
         with:
           target: 'http://example.com'
           rules: 'zap/rules.json'  # Optional custom rules file (if needed)
+          zap-options: '-config api.disablekey=true'  # Optional ZAP options
 
-      - name: Upload ZAP Results
+      - name: Upload ZAP Results in XML Format
         uses: actions/upload-artifact@v4
         with:
           name: zap-dast-report
-          path: zap/scan-report.html
+          path: zap/scan-report.xml
+
 
 
 
