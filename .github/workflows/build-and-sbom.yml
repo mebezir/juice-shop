@@ -36,3 +36,16 @@ jobs:
         with:
           name: juice-shop-sbom
           path: sbom.json
+      - name: Install Semgrep
+        run: |
+          curl -sL https://semgrep.dev/install.sh | bash
+      
+      - name: Run Semgrep SAST
+        run: |
+          semgrep scan --config auto --sarif --output semgrep-results.sarif
+      
+      - name: Upload Semgrep SARIF Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-sarif
+          path: semgrep-results.sarif
