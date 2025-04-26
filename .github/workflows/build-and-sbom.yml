@@ -71,18 +71,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install GitLeaks
-        run: |
-          curl -sL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_linux_x64.tar.gz | tar -xz -C /usr/local/bin
-
       - name: Run GitLeaks Scan with SARIF output
-        run: |
-          gitleaks detect --source . --report-format sarif --report-path gitleaks-results.sarif --exit-code 1 || true
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          config-path: ""
+          args: detect --source . --report-format sarif --report-path gitleaks-results.sarif --exit-code 1 || true
 
       - name: Upload GitLeaks SARIF Artifact
         uses: actions/upload-artifact@v4
         with:
           name: gitleaks-sarif
           path: gitleaks-results.sarif
+
 
 
