@@ -71,17 +71,35 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install GitLeaks
+        run: |
+          curl -sL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 -o /usr/local/bin/gitleaks
+          chmod +x /usr/local/bin/gitleaks
+
       - name: Run GitLeaks Scan with SARIF output
-        uses: gitleaks/gitleaks-action@v2
-        with:
-          config-path: ""
-          args: detect --source . --report-format sarif --report-path gitleaks-results.sarif --exit-code 1 || true
+        run: |
+          gitleaks detect --source . --report-format sarif --report-path gitleaks-results.sarif --exit-code 1 || true
 
       - name: Upload GitLeaks SARIF Artifact
         uses: actions/upload-artifact@v4
         with:
           name: gitleaks-sarif
           path: gitleaks-results.sarif
+  dummy-deploy:
+    name: Dummy Deploy
+    runs-on: ubuntu-latest
+    needs: [build-and-sbom, semgrep-sast, gitleaks]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Dummy Deploy Step
+        run: |
+          echo "Deploying application..."
+          sleep 5
+          echo "Application deployed successfully!"
+
 
 
 
