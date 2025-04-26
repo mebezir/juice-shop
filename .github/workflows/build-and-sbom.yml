@@ -1,0 +1,38 @@
+name: Build Docker Image and Generate SBOM
+
+on:
+  push:
+    branches:
+      - main  # veya master hangi branch'se
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-sbom:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        run: |
+          docker build -t mebezir-juice-shop .
+
+      - name: Install Syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Generate SBOM with Syft
+        run: |
+          syft docker:mebezir-juice-shop -o cyclonedx-json > sbom.json
+
+      - name: Upload SBOM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: juice-shop-sbom
+          path: sbom.json
